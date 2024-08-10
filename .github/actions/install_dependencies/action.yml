@@ -1,0 +1,9 @@
+name: install_dependencies
+description: 依存ツール等をインストールする
+
+runs:
+  using: composite
+  steps:
+    - name: install task
+      run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/.local/bin
+      shell: sh

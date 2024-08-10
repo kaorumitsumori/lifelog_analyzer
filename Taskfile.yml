@@ -1,0 +1,15 @@
+version: "3"
+
+dotenv:
+  - ./.env
+  - ./api/configs/.env
+
+tasks:
+  dev-frontend:
+    desc: frontendの開発サーバを起動します。APIサーバがdocker-compose upで起動している必要があります。
+    env:
+      API_PORT: "{{.API_PORT}}"
+      FRONT_PORT: "{{.FRONT_PORT}}"
+    cmds:
+      - NEXT_PUBLIC_API_ENDPOINT=http://localhost:${API_PORT} PORT=${FRONT_PORT} pnpm -r dev
+

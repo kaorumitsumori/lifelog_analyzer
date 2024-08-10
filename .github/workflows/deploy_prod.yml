@@ -1,0 +1,40 @@
+name: deploy-prod
+on:
+  workflow_dispatch:
+  # push:
+  #   paths:
+  #     - "api/**"
+  #     - "frontend/**"
+  #   branches:
+  #     - main
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'api/**'
+            frontend:
+              - 'frontend/**'
+
+  deploy-api:
+    needs: changes
+    if: ${{ needs.changes.outputs.api == 'true' }}
+    uses: ./.github/workflows/deploy_api_common.yml
+    secrets: inherit
+    with:
+      env: prod
+  deploy-frontend:
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    uses: ./.github/workflows/deploy_frontend_common.yml
+    secrets: inherit
+    with:
+      env: prod

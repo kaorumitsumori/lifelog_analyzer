@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api:
+    build:
+      context: ./api
+    volumes:
+      - ./api:/app
+    environment:
+      - LOG_LEVEL
+      - TZ=JST-9
+    ports:
+      - ${API_PORT}:${API_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ./scripts/entrypoint.sh
+
+  # APIサーバから参照するDB。ローカル用なので特に細かい設定とかはしてない。
+  db:
+    image: mysql:8.0
+    platform: linux/x86_64
+    volumes:
+      - db-store:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${DB_DB_NAME}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - DB_PORT=${DB_PORT}
+      - MYSQL_ROOT_HOST=%
+      - TZ='UTC'
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1s # 短くしてdb起動後すぐ起動できるようにしている
+      retries: 30 # 適当な値
+
+volumes:
+  db-store:

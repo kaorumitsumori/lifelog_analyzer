@@ -1,0 +1,29 @@
+# NOTE: このファイルはインフラ設定の基本的なパラメータを記載したものです
+# NOTE: terraform/ 以下から機械的に読み取って使用されます
+
+# サービスを表す文字列
+# FIXME: プロジェクトごとに変更してください
+# TUTORIAL:2(インフラ設定)-1 次に、クラウドインフラを構築します。
+#   前準備として、この設定ファイルを適切な内容に書き換えましょう。このファイルはterraformの定義から参照されています。
+#   ↑の行の指示に従って、適当なサービス名を設定しましょう(長すぎると不具合が起きるかもなので10文字程度、英数のみ記号はハイフンのみを推奨します)
+servicename: webapp-template
+
+# github actionsからのAWSへのアクセスを許可するリポジトリ名
+# FIXME: プロジェクトごとに変更してください
+# TUTORIAL:2(インフラ設定)-2 ↑の行の指示に従って、リポジトリ名を正しい値に変更しましょう。この値はCIにAWSへのアクセス権を設定する際に使用します。
+repo_to_allow_access_aws: avilendev/webapp-template
+
+# ベースとなるドメインです
+# NOTE: サンドボックス環境ではavilensandbox.netのサブドメインのみ使用可能です
+# FIXME: プロジェクトごとに変更してください
+# TUTORIAL:2(インフラ設定)-3 ↑の行の指示に従って、サブドメインの部分を好きな値に変更しましょう
+root_domain:
+  prod: hogehoge.avilensandbox.net
+
+# フロントのアクセス制限に使うbasic認証情報です
+basic_auth_user:
+  # dev: admin
+  prod: admin # NOTE: 空文字列にすると無効化
+basic_auth_password:
+  # dev: password
+  prod: password # NOTE: 空文字列にすると無効化

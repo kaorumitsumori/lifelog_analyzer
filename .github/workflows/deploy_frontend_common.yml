@@ -1,0 +1,34 @@
+name: deploy_frontend_common
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+
+env:
+  DEPLOY_ENV: ${{ inputs.env }}
+
+jobs:
+  deploy-app:
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.env }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/install_pnpm
+      - uses: moajo/terraform-metadata@v1
+        with:
+          metadata_path: terraform/env/${{ inputs.env }}/meta.json
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ env.FRONTEND_CI_ROLE_ARN }}
+          aws-region: ${{ env.FRONTEND_REGION }}
+      - run: pnpm install
+      - run: pnpm -r build
+      - run: aws s3 sync --delete ./frontend/out s3://${ORIGIN_BUCKETNAME}/
+      - run: aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/*"
